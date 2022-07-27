@@ -1,0 +1,6 @@
+// token times out
+// need to authenticate the login, get the token
+// keep checking the token to keep it active OR before search, handshake and check if still valid
+// if not valid, re-authenticate
+
+// do it all in the server due to token/log in info
