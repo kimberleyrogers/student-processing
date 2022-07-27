@@ -1,7 +1,11 @@
+import { vtPassword, vtUsername, canvasKey } from './kim.js';
+import axios from 'axios';
+// cors middleware?
 const convert = require('xml-js');
 
-// content of this was taken from https://www.delftstack.com/howto/javascript/javascript-xml-to-json/
-// const regex = "/(?:<(\w*)(?:\s[^>]*)*>)((?:(?!<\\1).)*)(?:<\/\\1>)|<(\w*)(?:\s*)*\/>/gm";
+
+
+
 
 const xmlString = `
 <?xml version="1.0" encoding="utf-8"?>
@@ -71,27 +75,52 @@ const xmlString = `
     </soap:Body>
 </soap:Envelope>
   `
-// const result1 = convert.xml2json(xmlString, {compact: true, spaces: 4});
-// const result2 = convert.xml2json(xmlString, {compact: false, spaces: 4});
-// console.log(result1, '\n', result2);
 
-function Convert(props) {
+// call API to get token - returns XML
+// CORS issue - https://stackoverflow.com/questions/35588699/response-to-preflight-request-doesnt-pass-access-control-check
+// next step try from heroku to see if it's just a local host issue?
+
+export function Authenticate(user, pw) {
+
+    const xmlAuthenticate = `
+        <?xml version="1.0" encoding="utf-8"?>
+        <soap12:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope">
+        <soap12:Body>
+            <ValidateClient xmlns="http://www.ozsoft.com.au/VETtrak/api/complete">
+            <sUsername>${vtUsername}</sUsername>
+            <sPassword>${vtPassword}</sPassword>
+            </ValidateClient>
+        </soap12:Body>
+        </soap12:Envelope>
+    `
+    axios
+    .post('http://sthservices.ozsoft.com.au/SIU_API/VT_API.asmx?WSDL', 
+        xmlAuthenticate,
+        {headers: 
+            {'Content-Type': 'text/xml'}
+        })
+    .then((res) => {
+        console.log('reached .then')
+        console.log(res);
+    })
+    .catch((err) => {
+        console.log(err.response.data)});
+}
+
+
+// call API - using token to GetEnrolmentsByClient - returns XML
+
+
+
+// function for turning XML into JSON - GetEnrolmentsByClientID
+// needs work so it works for multiple results, not just one
+export function Convert(props) {
     const result1 = convert.xml2json(props.xml, {compact: true, spaces: 4});
-    // console.log(result1)
-    // let result2 = result1["_declaration"]
-    // console.log(result2)
-    // let result3 = result1[0]
-    // console.log(result3)
     let parsed = JSON.parse(result1);
-    // console.log(parsed)
     let readableInfo = parsed['soap:Envelope']['soap:Body']['GetEnrolmentsForClientResponse']['GetEnrolmentsForClientResult']['ClieEnroList']['TClieEnro']
-    // console.log(readableInfo)
     let readableInfoResult1 = readableInfo[0]
     console.log(readableInfoResult1)
     let readableInfoResult2 = readableInfo[1]
     return readableInfoResult1['Qual_Name']['_text']
 }
 
-// console.log(Convert(xmlString))
-
-export default Convert;
