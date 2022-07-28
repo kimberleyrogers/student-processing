@@ -1,10 +1,8 @@
 import { vtPassword, vtUsername, canvasKey } from './kim.js';
 import axios from 'axios';
+import { useEffect, useState } from 'react';
 // cors middleware?
 const convert = require('xml-js');
-
-
-
 
 
 const xmlString = `
@@ -80,37 +78,84 @@ const xmlString = `
 // CORS issue - https://stackoverflow.com/questions/35588699/response-to-preflight-request-doesnt-pass-access-control-check
 // next step try from heroku to see if it's just a local host issue?
 
-export function Authenticate(user, pw) {
-
-    const xmlAuthenticate = `
-        <?xml version="1.0" encoding="utf-8"?>
-        <soap12:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope">
-        <soap12:Body>
-            <ValidateClient xmlns="http://www.ozsoft.com.au/VETtrak/api/complete">
-            <sUsername>${vtUsername}</sUsername>
-            <sPassword>${vtPassword}</sPassword>
-            </ValidateClient>
-        </soap12:Body>
-        </soap12:Envelope>
-    `
-    axios
-    .post('http://sthservices.ozsoft.com.au/SIU_API/VT_API.asmx?WSDL', 
-        xmlAuthenticate,
-        {headers: 
-            {'Content-Type': 'text/xml'}
+export function Authenticate() {
+    const [data, setData] = useState("waiting to get your token")
+    useEffect(() => {
+        const xmlAuthenticate = `
+            <?xml version="1.0" encoding="utf-8"?>
+            <soap12:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope">
+            <soap12:Body>
+                <ValidateClient xmlns="http://www.ozsoft.com.au/VETtrak/api/complete">
+                <sUsername>${vtUsername}</sUsername>
+                <sPassword>${vtPassword}</sPassword>
+                </ValidateClient>
+            </soap12:Body>
+            </soap12:Envelope>
+        `
+        axios
+        .post('http://sthservices.ozsoft.com.au/SIU_API/VT_API.asmx?WSDL', 
+            xmlAuthenticate,
+            {headers: 
+                {'Content-Type': 'text/xml'}
         })
-    .then((res) => {
-        console.log('reached .then')
-        console.log(res);
-    })
-    .catch((err) => {
-        console.log(err.response.data)});
+        .then((res) => {
+            const response = res.data
+            console.log('reached .then')
+            console.log(res);
+            setData(response)
+        })
+        .catch((err) => {
+            console.log(err.response.data)
+        });
+    },[])
+    return (
+        <p>The response is: {data}</p>
+    )
+}
+
+export function AuthenticateFromServer() {
+    const [data, setData] = useState('waiting for token')
+    console.log('Auth from server function called')
+
+    useEffect(() => {
+        axios
+        .get('http://localhost:3000/auth')
+        .then((res) => {
+            const response = res.data
+            console.log('reached .then')
+            console.log(res.data);
+            setData(response)
+        })
+        .catch((err) => {
+            console.log(err.response.data)});
+    },[])
+    return (
+        <p>Token is: {data}</p>
+    )
+}
+
+
+export function ServerTest() {
+    const [data, setData] = useState(null)
+
+    useEffect(() => {
+        axios
+        .get('http://localhost:3000/hello')
+        .then((res) => {
+            const response = res.data
+            console.log(`response is ${response}`)
+            setData(response)
+        })
+        .catch((err) => {
+            console.log(err.response.data)});
+    },[])
+    return (
+        <p>server test response: {data}</p>
+    )
 }
 
 
 // call API - using token to GetEnrolmentsByClient - returns XML
-
-
 
 // function for turning XML into JSON - GetEnrolmentsByClientID
 // needs work so it works for multiple results, not just one
@@ -119,7 +164,7 @@ export function Convert(props) {
     let parsed = JSON.parse(result1);
     let readableInfo = parsed['soap:Envelope']['soap:Body']['GetEnrolmentsForClientResponse']['GetEnrolmentsForClientResult']['ClieEnroList']['TClieEnro']
     let readableInfoResult1 = readableInfo[0]
-    console.log(readableInfoResult1)
+    // console.log(readableInfoResult1)
     let readableInfoResult2 = readableInfo[1]
     return readableInfoResult1['Qual_Name']['_text']
 }

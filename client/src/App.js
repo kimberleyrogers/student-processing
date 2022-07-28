@@ -1,7 +1,7 @@
 import './App.css';
 import PDFFile from './PDF';
 import { PDFDownloadLink } from '@react-pdf/renderer';
-import { Convert, Authenticate } from './VTAPI';
+import { Convert, Authenticate, ServerTest, AuthenticateFromServer } from './VTAPI';
 
 const xmlString = `
 <?xml version="1.0" encoding="utf-8"?>
@@ -76,12 +76,13 @@ function App() {
   return (
     <div className="App">
       <p>Home page</p>
-      <PDFFile />
+      {/* <PDFFile />
       <PDFDownloadLink document={<PDFFile />} filename="Withdrawal Form - Student Name - Student Number">
         {({loading}) => (loading ? (<button>Loading document...</button>) : (<button>Download</button>))}
-      </PDFDownloadLink>
+      </PDFDownloadLink> */}
     <Convert xml={xmlString}/>
-    <Authenticate />
+    <AuthenticateFromServer />
+    <ServerTest />
     </div>
   );
 }
