@@ -2,6 +2,8 @@ const express = require('express');
 const axios = require('axios');
 const pg = require('pg');
 const { response } = require('express');
+const convert = require('xml-js');
+const XMLWriter = require('xml-writer');
 require('dotenv').config()
 
 // const port = 3001;
@@ -9,6 +11,17 @@ const port = process.env.PORT || 3000;
 const app = express();
 
 app.use(express.static('client'))
+
+// template for converting xml to json - specific to the call
+function convertForAuthenticate(xmlString) {
+  // # is specific to call and standard results - hacky as results may change
+  const xmlStringMinusHeader = xmlString.slice(38)
+  const unparsedJSON = convert.xml2json(xmlStringMinusHeader, {compact: true, spaces: 4});
+  const parsedJSON = JSON.parse(unparsedJSON);
+  // console.log(`parsedJSON is: ${parsedJSON}`)
+  const token = parsedJSON['soap:Envelope']['soap:Body']['ValidateClientResponse']['ValidateClientResult']['Token']
+  return token
+}
 
 app.use((req, res, next) => {
   console.log(`${new Date()} ${req.method} ${req.path}`);
@@ -19,7 +32,9 @@ app.use((req, res, next) => {
   );
   next()
 })
-// <?xml version="1.0" encoding="utf-8"?>
+
+
+// template for how to make the api call, convert it to json and return to the server
 app.get('/auth', (req, res) => {
 
   const vtUsername = process.env.VT_USERNAME
@@ -35,20 +50,33 @@ app.get('/auth', (req, res) => {
     </soap12:Body>
     </soap12:Envelope>
   `
-    axios
-    .post('https://sthservices.ozsoft.com.au/SIU_API/VT_API.asmx?WSDL', 
-      xmlAuthenticate,
-      {headers: 
-          {'Content-Type': 'text/xml'}
+
+  const authenticate = async() => {
+
+    let xmlResult =
+
+      await axios
+      .post('https://sthservices.ozsoft.com.au/SIU_API/VT_API.asmx?WSDL', 
+        xmlAuthenticate,
+        {headers: 
+            {'Content-Type': 'text/xml'}
+        })
+      .then((res) => {
+        // console.log(`line 67: ${res.data}`)
+        // const returnValueHeaderRemoved = res.data.toString().slice(38)
+        const converted = convertForAuthenticate(res.data.toString())
+        // console.log('converted is... ' + converted)
+        return converted
       })
-    .then((res) => {
-      console.log(`sending the response from server to client`)
-      console.log(res.data)
-     // need to return the info - why is my brain failing?
-    })
-    .catch((err) => {
-      console.log(`server side error: ${err}`)
-    });
+      .catch((err) => {
+        console.log(`server side error: ${err}`)
+      });
+    // console.log(xmlResult)
+    return xmlResult
+  }
+
+   authenticate()
+    .then((result) => res.send(result))
 });
 
 
@@ -56,16 +84,6 @@ app.get('/hello', (req, res) => {
   res.send('hello this is your server speaking')
 });
 
-// router.get('/api/challenges/:id', (request, response) => {
-//   let id = request.params.id;
-//   const sql = `
-//   SELECT * FROM challenges WHERE id = ${id}
-//   `
-//   db.query(sql)
-//       .then((dbResult) => {
-//           response.json(dbResult.rows)
-//   })
-// })
 
 app.listen(port, () => {
   console.log(`server listening on port: ${port}`)

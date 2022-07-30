@@ -121,9 +121,7 @@ export function AuthenticateFromServer() {
         axios
         .get('http://localhost:3000/auth')
         .then((res) => {
-            const response = res.data
-            console.log('reached .then')
-            console.log(res.data);
+            const response = res.data['_text']
             setData(response)
         })
         .catch((err) => {
@@ -141,7 +139,7 @@ export function ServerTest() {
     useEffect(() => {
         axios
         .get('http://localhost:3000/hello')
-        .then((res) => {
+        .then((res) => {    
             const response = res.data
             console.log(`response is ${response}`)
             setData(response)
