@@ -1,28 +1,32 @@
+// libraries in use
 const express = require('express');
 const axios = require('axios');
 const pg = require('pg');
 const { response } = require('express');
-const convert = require('xml-js');
-const XMLWriter = require('xml-writer');
+const session = require('express-session');
+// no need - do it in the browser
+const pgSession = require ('connect-pg-simple')(session)
+// XML conversion library
+
+
+//connects to the db js file for setting session cookies
+const db = require('./database/db')
+
+// uses dot environment (file .env) to store password
 require('dotenv').config()
 
-// const port = 3001;
+// defining each controller and grabbing the file needed
+const authController = require('./controllers/auth.js')
+const getEnrolmentsController = require('./controllers/getEnrolments.js')
+
+// creates the local address
 const port = process.env.PORT || 3000;
 const app = express();
-
+// tell server where the client side items are
 app.use(express.static('client'))
 
-// template for converting xml to json - specific to the call
-function convertForAuthenticate(xmlString) {
-  // # is specific to call and standard results - hacky as results may change
-  const xmlStringMinusHeader = xmlString.slice(38)
-  const unparsedJSON = convert.xml2json(xmlStringMinusHeader, {compact: true, spaces: 4});
-  const parsedJSON = JSON.parse(unparsedJSON);
-  // console.log(`parsedJSON is: ${parsedJSON}`)
-  const token = parsedJSON['soap:Envelope']['soap:Body']['ValidateClientResponse']['ValidateClientResult']['Token']
-  return token
-}
-
+// Logging Middleware - must be before the routes
+// sits between the request and the route
 app.use((req, res, next) => {
   console.log(`${new Date()} ${req.method} ${req.path}`);
   res.header("Access-Control-Allow-Origin", "*");
@@ -33,58 +37,20 @@ app.use((req, res, next) => {
   next()
 })
 
+// to set a cookie for the session
+app.use(session({
+  store: new pgSession({
+      pool: db,
+      createTableIfMissing: true,
+  }),
+  secret: process.env.EXPRESS_SESSION_SECRET_KEY,    
+}))
 
-// template for how to make the api call, convert it to json and return to the server
-app.get('/auth', (req, res) => {
+// authorisation API functions in seoarate file
+app.use('/', authController);
+app.use('/', getEnrolmentsController);
 
-  const vtUsername = process.env.VT_USERNAME
-  const vtPassword = process.env.VT_PASSWORD
-
-  const xmlAuthenticate = `
-    <soap12:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope">
-    <soap12:Body>
-        <ValidateClient xmlns="http://www.ozsoft.com.au/VETtrak/api/complete">
-        <sUsername>${vtUsername}</sUsername>
-        <sPassword>${vtPassword}</sPassword>
-        </ValidateClient>
-    </soap12:Body>
-    </soap12:Envelope>
-  `
-
-  const authenticate = async() => {
-
-    let xmlResult =
-
-      await axios
-      .post('https://sthservices.ozsoft.com.au/SIU_API/VT_API.asmx?WSDL', 
-        xmlAuthenticate,
-        {headers: 
-            {'Content-Type': 'text/xml'}
-        })
-      .then((res) => {
-        // console.log(`line 67: ${res.data}`)
-        // const returnValueHeaderRemoved = res.data.toString().slice(38)
-        const converted = convertForAuthenticate(res.data.toString())
-        // console.log('converted is... ' + converted)
-        return converted
-      })
-      .catch((err) => {
-        console.log(`server side error: ${err}`)
-      });
-    // console.log(xmlResult)
-    return xmlResult
-  }
-
-   authenticate()
-    .then((result) => res.send(result))
-});
-
-
-app.get('/hello', (req, res) => {
-  res.send('hello this is your server speaking')
-});
-
-
+// starts the web server
 app.listen(port, () => {
   console.log(`server listening on port: ${port}`)
 });

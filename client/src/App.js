@@ -1,7 +1,9 @@
 import './App.css';
 import PDFFile from './PDF';
 import { PDFDownloadLink } from '@react-pdf/renderer';
-import { Convert, Authenticate, ServerTest, AuthenticateFromServer } from './VTAPI';
+import { Convert, AuthenticateFromServer } from './authCl';
+import { GetEnrolments } from './getEnrolmentsCl';
+import { BrowserRouter, Routes, Route, useParams } from "react-router-dom";
 
 const xmlString = `
 <?xml version="1.0" encoding="utf-8"?>
@@ -72,17 +74,47 @@ const xmlString = `
 </soap:Envelope>
 `
 
+function HomePage() {
+    return (
+        <div id='home-page'>
+            <div id="home-first-column">
+                <p>Home</p>
+                <p>Home page</p>
+                {/* <AuthenticateFromServer /> */}
+            </div>
+            <div id="home-second-column">
+                <Convert xml={xmlString}/>
+                <GetEnrolments studentId={`09381`}/>
+            </div>
+            
+        {/* <PDFFile />
+        <PDFDownloadLink document={<PDFFile />} filename="Withdrawal Form - Student Name - Student Number">
+            {({loading}) => (loading ? (<button>Loading document...</button>) : (<button>Download</button>))}
+        </PDFDownloadLink> */} 
+        </div>
+    )
+}
+
+function AboutPage() {
+    return (
+        <div>
+            <p>About</p>
+        </div>
+    )
+}
+
 function App() {
-  return (
+  // if there is a session cookie, go to HomePage, otherwise go to LoginPage
+    return (
+    
     <div className="App">
-      <p>Home page</p>
-      {/* <PDFFile />
-      <PDFDownloadLink document={<PDFFile />} filename="Withdrawal Form - Student Name - Student Number">
-        {({loading}) => (loading ? (<button>Loading document...</button>) : (<button>Download</button>))}
-      </PDFDownloadLink> */}
-    <Convert xml={xmlString}/>
-    <AuthenticateFromServer />
-    <ServerTest />
+      <BrowserRouter>
+        <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/about" element={<AboutPage />} />
+        </Routes>
+      </BrowserRouter>
+
     </div>
   );
 }

@@ -29,6 +29,19 @@
   color: #61dafb;
 }
 
+#home-page {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+#home-first-column {
+  background-color: palegoldenrod;
+}
+
+#home-second-column {
+  background-color: lightseagreen;
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
