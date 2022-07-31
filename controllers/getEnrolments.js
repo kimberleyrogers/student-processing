@@ -57,9 +57,7 @@ router.get('/get_enrolments/:studentId', (req, res) => {
               {'Content-Type': 'text/xml'}
           })
         .then((res) => {
-          // console.log(`line 67: ${res.data}`)
           const converted = convertGetEnrolments(res.data.toString())
-          console.log('converted is... ' + converted)
           return converted
         })
         .catch((err) => {

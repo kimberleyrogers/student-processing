@@ -16,13 +16,16 @@ export function GetEnrolments(props) {
         .get(`http://localhost:3000/get_enrolments/${studentId}`)
         .then((res) => {
             console.log(res.data)
-            // extract student name, id and update state
-            // setData(response)
+            // extract student name + update state
             firstName = res.data['ClieEnroList']['TClieEnro'][0]['GivenName']['_text']
             surname = res.data['ClieEnroList']['TClieEnro'][0]['Surname']['_text']
             studentName = `${firstName} ${surname}`
             console.log(`student name is ${studentName}`)
             setStudent(studentName)
+            // update array variable and state, display below
+            enrolmentArray = res.data['ClieEnroList']['TClieEnro']
+            console.log(enrolmentArray)
+            setSearchResults(enrolmentArray)
 
 
             // iterate through all objects in the array, and unpack them
@@ -36,21 +39,18 @@ export function GetEnrolments(props) {
     return (
         <div>
             <h2>Student INFO: {student}</h2>
-
-            
-        </div>
         
+            {searchResults.map((enrolment, index) => {
+
+                return (
+                    <div>
+                        <p>{enrolment['ID']['_text']}</p>
+                        <p>{enrolment['Qual_Code']['_text']}</p>
+                        <p>{enrolment['Qual_Name']['_text']}</p>
+                        <p>{enrolment['Status']['_text']}</p>
+                    </div>
+                )
+            })}
+        </div>
     )
 }
-
-{/* <div onClick={() => selectFilm(film)} >
-
-<FilmRow 
-  img={`https://image.tmdb.org/t/p/w780` + film.poster_path} 
-  title={film.title} 
-  year={film.release_date} 
-  key={index}
-/>
-
-</div>)})}
-</div> */}
