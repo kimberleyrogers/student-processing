@@ -7,7 +7,9 @@ export function Search() {
 
     // all of the state needs to be here for child components... I think
 
-    const [searchTerm, setSearchTerm] = useState(null)
+    const [searchTerm, setSearchTerm] = useState('');
+    const [submitSearch, setSubmitSearch] = useState(false);
+    
 
     // useEffect(() => {
     //     axios
@@ -20,16 +22,29 @@ export function Search() {
     //         console.log(err.response.data)});
     // },[])
 
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        setSubmitSearch(true);
+        console.log("it's true")
+    }
+
     return (
         <div>
-            <form>
+            <form onSubmit={handleSubmit}>
                 <label>
                     SEARCH:
-                    <input type="text" />
+                    <input 
+                        type="text"
+                        required
+                        value={searchTerm}
+                        onChange ={(e) => setSearchTerm(e.target.value)}
+                    />
                 </label>
+                <input type="submit" />
+                <button>search for { searchTerm }</button>
             </form>
             {/* ternary for search results */}
-            {searchTerm == null ? <NoSearch /> : <GetEnrolmenties studentId={searchTerm} />}
+            {submitSearch === false ? <NoSearch /> : <GetEnrolmenties studentId={searchTerm} />}
             
         </div>
         
