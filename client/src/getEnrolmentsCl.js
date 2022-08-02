@@ -3,7 +3,43 @@ import { useEffect, useState } from 'react';
 
 export function GetEnrolments(props) {
 
-    const studentId = props.studentId
+    // have variable like let ready = true
+    // do first call, if status is -1, set ready to false and do Auth
+    // after auth, store token, set ready to true
+    // starts again
+    // do call and if status is not -1 continue
+
+
+    // API handshake, if live do the enr, if not, do the auth then the enr
+    // will do the auth check - save the token
+    // then enrolments by client search
+    const [data, setData] = useState(null);
+
+    // useEffect(() => {
+    //     axios
+    //     .get('http://localhost:3000/handshake')
+    //     .then((res) => {
+    //         console.log(res.data)
+    //         const response = res.data['_text']
+    //         // setData(response)
+    //     })
+    //     .catch((err) => {
+    //         console.log(err.response.data)});
+    // },[])
+    
+
+    // useEffect(() => {
+    //     axios
+    //     .get('http://localhost:3000/auth')
+    //     .then((res) => {
+    //         const response = res.data['_text']
+    //         setData(response)
+    //     })
+    //     .catch((err) => {
+    //         console.log(err.response.data)});
+    // },[])
+
+    const studentId = props.searchTerm
     const [student, setStudent] = useState('waiting for search results')
     const [searchResults, setSearchResults] = useState('no results yet')
     let studentName = ""
@@ -33,14 +69,16 @@ export function GetEnrolments(props) {
             
         })
         .catch((err) => {
-            console.log(err.response.data)});
+            // if
+            console.log(err.response)});
     },[])
 
     return (
         <div>
+            <button>Refresh token</button>
             <h2>Student INFO: {student}</h2>
         
-            {searchResults.map((enrolment, index) => {
+            {/* {searchResults.map((enrolment, index) => {
 
                 return (
                     <div>
@@ -50,7 +88,7 @@ export function GetEnrolments(props) {
                         <p>{enrolment['Status']['_text']}</p>
                     </div>
                 )
-            })}
+            })} */}
         </div>
     )
 }

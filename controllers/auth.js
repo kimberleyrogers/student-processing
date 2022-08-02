@@ -3,6 +3,13 @@ const express = require('express');
 const router = express.Router()
 const axios = require('axios');
 const convert = require('xml-js');
+const bcrypt = require('bcrypt')
+
+
+// hash a password
+function generateHash(password) {
+  return bcrypt.hashSync(password, bcrypt.genSaltSync(10), null)
+}
 
 // template for converting xml to json - specific to the call
 function convertForAuthenticate(xmlString) {
@@ -58,7 +65,11 @@ router.get('/auth', (req, res) => {
     }
     // next - don't return token, hash it and store in DB
     authenticate()
-      .then((result) => res.send(result))
+      .then((result) => {
+        console.log(`the token is ${result}`)
+
+        // res.send(result)
+    })
 });
 
 module.exports = router

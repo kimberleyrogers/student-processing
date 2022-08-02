@@ -1,1 +1,1 @@
-INSERT INTO users (name, email, password_hash, vt_username_hash, vt_password_hash) VALUES ('kimberley', 'kim@kim.com', 'jungkook$6');
+INSERT INTO users (name, email) VALUES ('kimberley', 'kim@kim.com');

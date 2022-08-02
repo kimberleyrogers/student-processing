@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router()
 const axios = require('axios');
 const convert = require('xml-js');
+const bcrypt = require('bcrypt')
 
 // converting xml to json - specific to the call
 function convertGetEnrolments(xmlString) {
@@ -66,9 +67,13 @@ router.get('/get_enrolments/:studentId', (req, res) => {
       // console.log(xmlResult)
       return xmlResult
     }
+
     // next - don't return token, hash it and store in DB
     getEnrolments()
-      .then((result) => res.send(result))
+      .then((result) => 
+      console.log(`line 74 result is: ${result}`))
+      // if status = -1, call Auth.
+      // res.send(result))
 });
 
 module.exports = router

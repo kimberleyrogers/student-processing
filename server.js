@@ -6,8 +6,14 @@ const { response } = require('express');
 const session = require('express-session');
 // no need - do it in the browser
 const pgSession = require ('connect-pg-simple')(session)
-// XML conversion library
+const bcrypt = require('bcrypt')
 
+// let hashedToken = ''
+
+// // hash a password
+// function generateHash(password) {
+//   return bcrypt.hashSync(password, bcrypt.genSaltSync(10), null)
+// }
 
 //connects to the db js file for setting session cookies
 const db = require('./database/db')
@@ -18,12 +24,18 @@ require('dotenv').config()
 // defining each controller and grabbing the file needed
 const authController = require('./controllers/auth.js')
 const getEnrolmentsController = require('./controllers/getEnrolments.js')
+const sessionController = require('./controllers/session.js')
+const signUpController = require('./controllers/signUp.js')
+const handshakeController = require('./controllers/handshake.js')
 
 // creates the local address
 const port = process.env.PORT || 3000;
 const app = express();
 // tell server where the client side items are
 app.use(express.static('client'))
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json())
+
 
 // Logging Middleware - must be before the routes
 // sits between the request and the route
@@ -37,6 +49,7 @@ app.use((req, res, next) => {
   next()
 })
 
+
 // to set a cookie for the session
 app.use(session({
   store: new pgSession({
@@ -46,9 +59,12 @@ app.use(session({
   secret: process.env.EXPRESS_SESSION_SECRET_KEY,    
 }))
 
-// authorisation API functions in seoarate file
+// authorisation API functions in separate file
 app.use('/', authController);
 app.use('/', getEnrolmentsController);
+app.use('/', sessionController);
+app.use('/', signUpController);
+app.use('/', handshakeController);
 
 // starts the web server
 app.listen(port, () => {

@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
+import { GetEnrolments } from './getEnrolmentsCl';
 const convert = require('xml-js');
-var ReactDOM = require('react-dom');
+const ReactDOM = require('react-dom');
 
 export function Search() {
 
@@ -11,21 +12,10 @@ export function Search() {
     const [submitSearch, setSubmitSearch] = useState(false);
     
 
-    // useEffect(() => {
-    //     axios
-    //     .get('http://localhost:3000/auth')
-    //     .then((res) => {
-    //         const response = res.data['_text']
-    //         setData(response)
-    //     })
-    //     .catch((err) => {
-    //         console.log(err.response.data)});
-    // },[])
 
     const handleSubmit = (e) => {
         e.preventDefault();
         setSubmitSearch(true);
-        console.log("it's true")
     }
 
     return (
@@ -41,13 +31,9 @@ export function Search() {
                     />
                 </label>
                 <input type="submit" />
-                <button>search for { searchTerm }</button>
             </form>
-            {/* ternary for search results */}
-            {submitSearch === false ? <NoSearch /> : <GetEnrolmenties studentId={searchTerm} />}
-            
-        </div>
-        
+            {submitSearch === false ? <NoSearch /> : <GetEnrolments studentId={searchTerm} />}
+        </div> 
     )
 }
 
@@ -60,14 +46,14 @@ function NoSearch() {
     )
 }
 
-function GetEnrolmenties(props) {
+// function GetEnrolmenties(props) {
 
-    return (
-        <div>
-            <p>search placeholder</p>
-        </div>
-    )
-}
+//     return (
+//         <div>
+//             <p>search placeholder</p>
+//         </div>
+//     )
+// }
 
 // call API - using token to GetEnrolmentsByClient - returns XML
 
