@@ -49,7 +49,6 @@ app.use((req, res, next) => {
   next()
 })
 
-
 // to set a cookie for the session
 app.use(session({
   store: new pgSession({

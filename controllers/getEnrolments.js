@@ -15,10 +15,6 @@ function convertGetEnrolments(xmlString) {
   const parsedJSON = JSON.parse(unparsedJSON);
   //view parsed JSON and see how to edit line 15 to get what you need
   console.log(`parsedJSON is: ${parsedJSON}`)
-  // const enrolmentArray2 = parsedJSON['soap:Envelope']['soap:Body']['GetEnrolmentsForClientResponse']['GetEnrolmentsForClientResult']['ClieEnroList']['TClieEnro'][0]
-  // console.log(`array2 array: ${enrolmentArray2}`)
-  // const enrolmentArray3 = parsedJSON['soap:Envelope']['soap:Body']['GetEnrolmentsForClientResponse']['GetEnrolmentsForClientResult']['ClieEnroList']['TClieEnro'][1]
-  // console.log(`array3 array: ${enrolmentArray3}`)
 
   const enrolmentArray = parsedJSON['soap:Envelope']['soap:Body']['GetEnrolmentsForClientResponse']['GetEnrolmentsForClientResult']
   console.log(`original array: ${enrolmentArray}`)
@@ -30,12 +26,49 @@ function convertGetEnrolments(xmlString) {
 // template for how to make the api call, convert it to json and return to the server
 router.get('/get_enrolments/:studentId', (req, res) => {
 
-    const studentId = req.params.studentId
-    console.log(studentId)
-    // currently pulling from dotenv - needs to come from user being logged in
-    const vtUsername = process.env.VT_USERNAME
-    const vtPassword = process.env.VT_PASSWORD
-    const vtToken = process.env.VT_TOKEN
+  const studentId = req.params.studentId
+  console.log(studentId)
+  // currently pulling from dotenv - needs to come from user being logged in
+  // const vtUsername = process.env.VT_USERNAME
+  // const vtPassword = process.env.VT_PASSWORD
+  // const vtToken = process.env.VT_TOKEN
+
+  // check session ID in DB - get token
+  // if token is null - do validate client call - store token - return token
+  // if token exists return token
+  // do API call as below
+
+  // handles login, setting session
+
+  const checkSession = async() => {
+    let sessionInfo = await axios.get('/session')
+    console.log(sessionInfo.id)
+    return sessionInfo.id
+  }
+
+  let userToken = ''
+
+  checkSession()
+  .then((result) => {
+    console.log(result)
+    const sql = `
+    SELECT vt_token_hash FROM users WHERE id = ($1);
+    `
+    db.query(sql, [result])
+    .then(dbResult => {
+
+      console.log('line 60' +  dbResult.rows)
+
+      if (dbResult.rows != "") {
+        console.log('line 63')
+      } else {res.status(401).json("rows is empty")}
+    })
+    .catch((error) => {
+      res.status(500).json("error is " + error)
+    })
+  })
+
+
   
     const xmlGetEnrolments = `
       <Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">

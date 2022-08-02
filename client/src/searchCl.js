@@ -8,15 +8,14 @@ export function Search() {
 
     // all of the state needs to be here for child components... I think
 
-    const [searchTerm, setSearchTerm] = useState('');
+    const [searchTerm, setSearchTerm] = useState('09381');
     const [submitSearch, setSubmitSearch] = useState(false);
     
-
-
     const handleSubmit = (e) => {
         e.preventDefault();
         setSubmitSearch(true);
     }
+    console.log(searchTerm)
 
     return (
         <div>
@@ -37,6 +36,8 @@ export function Search() {
     )
 }
 
+
+
 function NoSearch() {
 
     return (
@@ -46,14 +47,6 @@ function NoSearch() {
     )
 }
 
-// function GetEnrolmenties(props) {
-
-//     return (
-//         <div>
-//             <p>search placeholder</p>
-//         </div>
-//     )
-// }
 
 // call API - using token to GetEnrolmentsByClient - returns XML
 
@@ -68,4 +61,3 @@ export function Convert(props) {
     let readableInfoResult2 = readableInfo[1]
     return readableInfoResult1['Qual_Name']['_text']
 }
-

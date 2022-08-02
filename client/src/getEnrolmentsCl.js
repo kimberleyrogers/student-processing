@@ -40,6 +40,7 @@ export function GetEnrolments(props) {
     // },[])
 
     const studentId = props.searchTerm
+    console.log(studentId)
     const [student, setStudent] = useState('waiting for search results')
     const [searchResults, setSearchResults] = useState('no results yet')
     let studentName = ""
@@ -75,7 +76,7 @@ export function GetEnrolments(props) {
 
     return (
         <div>
-            <button>Refresh token</button>
+            {/* <button>Refresh token</button> */}
             <h2>Student INFO: {student}</h2>
         
             {/* {searchResults.map((enrolment, index) => {
