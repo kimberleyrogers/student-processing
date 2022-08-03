@@ -4,16 +4,55 @@ import { GetEnrolments } from './getEnrolmentsCl';
 const convert = require('xml-js');
 const ReactDOM = require('react-dom');
 
-export function Search() {
+export function Search(user, setUser, userEmail, setUserEmail) {
 
     // all of the state needs to be here for child components... I think
 
     const [searchTerm, setSearchTerm] = useState('09381');
     const [submitSearch, setSubmitSearch] = useState(false);
+    const [searchResults, setSearchResults] = useState('no results yet')
+    const [studentName, setStudent] = useState('waiting for search results')
     
     const handleSubmit = (e) => {
         e.preventDefault();
         setSubmitSearch(true);
+        //call get enrolments here with search term, then render the results inside getenrolments
+        
+        let userName = user['user']
+        let emailAdd = user['userEmail']
+
+        let studentName = ""
+        let firstName = ""
+        let surname = ""
+        let enrolmentArray =[]
+
+        axios
+        .post(`http://localhost:3000/get_enrolments`, {
+            studentId: searchTerm,
+            userName: userName,
+            userEmail: emailAdd
+        })
+        .then((res) => {
+            console.log(res.data)
+            // extract student name + update state
+            firstName = res.data['ClieEnroList']['TClieEnro'][0]['GivenName']['_text']
+            surname = res.data['ClieEnroList']['TClieEnro'][0]['Surname']['_text']
+            studentName = `${firstName} ${surname}`
+            console.log(`student name is ${studentName}`)
+            setStudent(studentName)
+            // update array variable and state, display below
+            enrolmentArray = res.data['ClieEnroList']['TClieEnro']
+            console.log(enrolmentArray)
+            setSearchResults(enrolmentArray)
+
+
+            // iterate through all objects in the array, and unpack them
+            // const response = res.data['_text']
+            
+        })
+        .catch((err) => {
+            // if
+            console.log(err.response)});
     }
     console.log(searchTerm)
 
@@ -31,7 +70,8 @@ export function Search() {
                 </label>
                 <input type="submit" />
             </form>
-            {submitSearch === false ? <NoSearch /> : <GetEnrolments studentId={searchTerm} />}
+            {/* get enrolments just displays the results */}
+            {submitSearch === false ? <NoSearch /> : <GetEnrolments studentName={studentName} />}
         </div> 
     )
 }

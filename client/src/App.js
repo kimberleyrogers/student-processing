@@ -5,6 +5,7 @@ import { Convert, Search } from './searchCl';
 import { Login } from './login';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { Form } from './form';
 
 import { BrowserRouter, Routes, Route, useParams } from "react-router-dom";
 
@@ -13,6 +14,8 @@ function HomePage() {
 
     // const [searchTerm, setSearchTerm] = useState('');
     const [loggedIn, setLoggedIn] = useState(false);
+    const [user, setUser] = useState('')
+    const [userEmail, setUserEmail] = useState('')
 
     useEffect(() => {
         axios
@@ -21,8 +24,9 @@ function HomePage() {
             if(res.data.name) {
                 console.log(`logged in - ${res.data.name}`)
                 // if session info exists
-            // const response = res.data
-            // setLoggedIn(true)
+                const userName = res.data['name']
+                setLoggedIn(true)
+                setUser(userName)
             } else {
                 console.log(`not logged in - ${res}`)
             }  
@@ -35,11 +39,16 @@ function HomePage() {
 
     return (
         <div id='home-page'>
+           
             <div id="home-first-column">
+            <p>Logged in as {user} using {userEmail}</p>
                 {/* <Search /> */}
-                {loggedIn == true ? <Search /> : <Login loggedIn={loggedIn} setLoggedIn={setLoggedIn}/>}
+                {loggedIn == true ?
+                <Search user={user} setUser={setUser} userEmail={userEmail} setUserEmail={setUserEmail}/> :
+                <Login loggedIn={loggedIn} setLoggedIn={setLoggedIn} user={user} setUser={setUser} userEmail={userEmail} setUserEmail={setUserEmail}/>}
             </div>
             <div id="home-second-column">
+                <Form />
                 {/* <GetEnrolments studentId={`09381`}/> */}
             </div>
             

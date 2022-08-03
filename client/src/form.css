@@ -1,0 +1,25 @@
+
+
+form {
+    display: grid;
+    place-items: center;
+}
+
+form > label {
+    margin: 5px;
+    font-size: 10pt;
+}
+
+form > label > input {
+    margin-left: 10px;
+}
+
+#form-submit-button {
+    margin: 20px;
+    color: white;
+    background-color: black;
+}
+
+h2 {
+    font-size: 15pt;
+}

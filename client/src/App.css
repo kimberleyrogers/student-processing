@@ -35,11 +35,11 @@
 }
 
 #home-first-column {
-  background-color: palegoldenrod;
+  background-color: rgb(153, 185, 229);
 }
 
 #home-second-column {
-  background-color: lightseagreen;
+  background-color: rgb(237, 207, 139);
 }
 
 @keyframes App-logo-spin {

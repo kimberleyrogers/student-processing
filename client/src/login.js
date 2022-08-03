@@ -2,7 +2,7 @@ import axios from "axios";
 import { useState, useRef } from "react";
 
 
-export function Login({ loggedIn, setLoggedIn }) {
+export function Login({ loggedIn, setLoggedIn, user, setUser, userEmail, setUserEmail }) {
 
     const [submitLogin, setSubmitLogin] = useState(false);
     const [loginSignup, setLoginSignup] = useState('login')
@@ -15,14 +15,14 @@ export function Login({ loggedIn, setLoggedIn }) {
     return (
         <div>
             {loginSignup === 'login' ? 
-                <LoginForm handleloginSignupChange={handleloginSignupChange} loginSignup={loginSignup} setLoginSignup={setLoginSignup} loggedIn={loggedIn} setLoggedIn={setLoggedIn}/> :
+                <LoginForm handleloginSignupChange={handleloginSignupChange} loginSignup={loginSignup} setLoginSignup={setLoginSignup} loggedIn={loggedIn} setLoggedIn={setLoggedIn} user={user} setUser={setUser} userEmail={userEmail} setUserEmail={setUserEmail}/> :
                 <SignUpForm handleloginSignupChange={handleloginSignupChange} />
             }
         </div>
     )
 }
 
-function LoginForm({ handleloginSignupChange, loginSignup, setLoginSignup, loggedIn, setLoggedIn }) {
+function LoginForm({ user, setUser, handleloginSignupChange, loginSignup, setLoginSignup, loggedIn, setLoggedIn, userEmail, setUserEmail }) {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -34,7 +34,7 @@ function LoginForm({ handleloginSignupChange, loginSignup, setLoginSignup, logge
             alert('you need both an email and password to log in')
         } else {
             axios
-            .post('http://localhost:3000/session', {
+            .post('http://localhost:3000/api/session', {
                 email: email,
                 password: password
             })
@@ -42,6 +42,8 @@ function LoginForm({ handleloginSignupChange, loginSignup, setLoginSignup, logge
                 console.log(res.data)
                 console.log("you're logged in?")
                 setLoggedIn(true)
+                setUser(res.data.name)
+                setUserEmail(res.data.email)
             })
             .catch((err) => {
                 if (err.response.data.message === 'password is wrong') {
@@ -99,19 +101,17 @@ function SignUpForm({ handleloginSignupChange }) {
         e.preventDefault();
         
 
-        if (!name || !email || !password || !vtUsername || !vtPassword) {
+        if (!name || !email || !password) {
             alert('you need to provide all details to sign up')
         } else {
             // let username = vtUsername.toString();
             // let password = vtPassword.toString();
-            console.log(`before sending ${name} ${email} ${password} ${vtUsername} ${vtPassword}`);
+            console.log(`before sending ${name} ${email} ${password}`);
             axios
             .post('http://localhost:3000/new_user', {
                 name: name,
                 email: email,
-                password: password,
-                vtUsername: vtUsername,
-                vtPassword: vtPassword
+                password: password
             })
             .then((res) => {
                 console.log(res)
@@ -161,7 +161,7 @@ function SignUpForm({ handleloginSignupChange }) {
                         onChange ={(e) => setPassword(e.target.value)}
                     />
                 </label>
-                <h2>your Student Management System information</h2>
+                {/* <h2>your Student Management System information</h2>
                 <label>
                     SMS_USERNAME:
                     <input 
@@ -179,7 +179,7 @@ function SignUpForm({ handleloginSignupChange }) {
                         value={vtPassword}
                         onChange ={(e) => setVtPassword(e.target.value)}
                     />
-                </label>
+                </label> */}
                 <input type="submit" />
             </form>
             

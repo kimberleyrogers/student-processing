@@ -1,5 +1,5 @@
 import { Page, Text, Image, Document, StyleSheet, View } from "@react-pdf/renderer";
-import piccy from "./testpic.jpeg";
+
 
 
 const styles = StyleSheet.create({
