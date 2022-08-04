@@ -1,14 +1,13 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { GetEnrolments } from './getEnrolmentsCl';
-const convert = require('xml-js');
 const ReactDOM = require('react-dom');
 
 export function Search(user, setUser, userEmail, setUserEmail) {
 
-    // all of the state needs to be here for child components... I think
+    // all of the state needs to be here for child components
 
-    const [searchTerm, setSearchTerm] = useState('09381');
+    const [searchTerm, setSearchTerm] = useState('');
     const [submitSearch, setSubmitSearch] = useState(false);
     const [searchResults, setSearchResults] = useState('no results yet')
     const [studentName, setStudent] = useState('waiting for search results')
@@ -33,6 +32,7 @@ export function Search(user, setUser, userEmail, setUserEmail) {
             userEmail: emailAdd
         })
         .then((res) => {
+            console.log('data from server')
             console.log(res.data)
             // extract student name + update state
             firstName = res.data['ClieEnroList']['TClieEnro'][0]['GivenName']['_text']
@@ -44,7 +44,6 @@ export function Search(user, setUser, userEmail, setUserEmail) {
             enrolmentArray = res.data['ClieEnroList']['TClieEnro']
             console.log(enrolmentArray)
             setSearchResults(enrolmentArray)
-
 
             // iterate through all objects in the array, and unpack them
             // const response = res.data['_text']
@@ -67,9 +66,9 @@ export function Search(user, setUser, userEmail, setUserEmail) {
         })
     }
 
-
     return (
         <div>
+            {submitSearch === false ?  <p>Search for the student you are withdrawing.</p> : <p></p>}
             <form onSubmit={handleSubmit}>
                 <label>
                     SEARCH:
@@ -83,19 +82,7 @@ export function Search(user, setUser, userEmail, setUserEmail) {
                 <input type="submit" />
             </form>
             
-            {submitSearch === false ? <NoSearch /> : <GetEnrolments studentName={studentName} searchResults={searchResults}/>}
+            {searchResults && submitSearch === true ? <GetEnrolments studentName={studentName} searchResults={searchResults} /> : <p></p>}
         </div> 
     )
 }
-
-
-
-function NoSearch() {
-
-    return (
-        <div>
-            <p>No search yet, please search for a student</p>
-        </div>
-    )
-}
-

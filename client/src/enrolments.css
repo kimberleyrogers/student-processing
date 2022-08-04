@@ -1,3 +1,5 @@
 .enrolment-item {
     font-size: 10pt;
+    border: 2px solid rgb(68, 91, 101);
+    margin: 5px;
 }

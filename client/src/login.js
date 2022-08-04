@@ -34,7 +34,7 @@ function LoginForm({ user, setUser, handleloginSignupChange, loginSignup, setLog
             alert('you need both an email and password to log in')
         } else {
             axios
-            .post('http://localhost:3000/api/session', {
+            .post('http://localhost:3000/api/session/', {
                 email: email,
                 password: password
             })

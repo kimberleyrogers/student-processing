@@ -33,7 +33,6 @@ function convertGetEnrolments(xmlString) {
   return enrolmentArray
 }
 
-
 // template for how to make the api call, convert it to json and return to the server
 router.post('/get_enrolments', (req, res) => {
 
@@ -55,7 +54,8 @@ router.post('/get_enrolments', (req, res) => {
       </soap12:Body>
       </soap12:Envelope>
   `
-  // to get a new token from VT API if token doesn't exist or has expired
+
+  // to get a new token from VT API 
   const authenticate = async() => {
   
     let xmlResult =
@@ -67,10 +67,8 @@ router.post('/get_enrolments', (req, res) => {
             {'Content-Type': 'text/xml'}
         })
       .then((res) => {
-        // console.log(`line 67: ${res.data}`)
-        // const returnValueHeaderRemoved = res.data.toString().slice(38)
         const converted = convertForAuthenticate(res.data.toString())
-        // console.log('converted is... ' + converted)
+
         return converted
       })
       .catch((err) => {
@@ -89,40 +87,61 @@ router.post('/get_enrolments', (req, res) => {
     SET vt_token = $1 
     WHERE email = $2;
   `
+  // function fixToken(token) {
+  //   if (!String.prototype.encodeHTML) {
+  //     String.prototype.encodeHTML = function () {
+  //       return this.replace(/&/g, '&amp;')
+  //                 .replace(/</g, '&lt;')
+  //                 .replace(/>/g, '&gt;')
+  //                 .replace(/"/g, '&quot;')
+  //                 .replace(/'/g, '&apos;');
+  //   };
+  // }}
 
-  // const xmlGetEnrolments = `
-  //     <Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
-  //     <Body>
-  //         <GetEnrolmentsForClient xmlns="http://www.ozsoft.com.au/VETtrak/api/complete">
-  //             <sToken>${vtToken}</sToken>
-  //             <sClie_Code>${studentId}</sClie_Code>
-  //         </GetEnrolmentsForClient>
-  //     </Body>
-  //     </Envelope>
-  //   `
+// https://stackoverflow.com/questions/7918868/how-to-escape-xml-entities-in-javascript
+  const fixToken = (token) => {
+    return token.replace(/[<>&'"]/g, function (c) {
+        switch (c) {
+            case '<': return '&lt;';
+            case '>': return '&gt;';
+            case '&': return '&amp;';
+            case '\'': return '&apos;';
+            case '"': return '&quot;';
+        }
+    });
+  }
 
   const getEnrolments = async(vtToken) => {
-    const xmlGetEnrolments = `
-    <soap12:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope">
+
+    const xmlGetEnrolments2 = `<?xml version="1.0" encoding="utf-8"?>
+    <Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
+      <Body>
+        <GetEnrolmentsForClient xmlns="http://www.ozsoft.com.au/VETtrak/api/complete">
+          <sToken>${vtToken}</sToken>
+          <sClie_Code>${studentId}</sClie_Code>
+        </GetEnrolmentsForClient>
+      </Body>
+    </Envelope>`
+
+    const xmlGetEnrolments = `<soap12:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope">
     <soap12:Body>
         <GetEnrolmentsForClient xmlns="http://www.ozsoft.com.au/VETtrak/api/complete">
             <sToken>${vtToken}</sToken>
             <sClie_Code>${studentId}</sClie_Code>
         </GetEnrolmentsForClient>
     </soap12:Body>
-    </soap12:Envelope>
-  `
+    </soap12:Envelope>`
 
     vtToken = vtToken
     // console.log('checking the vttoken and student ID is okay')
     // console.log(vtToken)
     // console.log(studentId)
-    // console.log('xmlgetenrolments')
-    // console.log(xmlGetEnrolments)
+    console.log('xmlgetenrolments')
+    console.log(xmlGetEnrolments)
     let xmlResult =
       await axios
       .post('https://sthservices.ozsoft.com.au/SIU_API/VT_API.asmx?WSDL', 
-      xmlGetEnrolments,
+        xmlGetEnrolments2,
         {headers: 
             {'Content-Type': 'text/xml'}
         })
@@ -131,52 +150,44 @@ router.post('/get_enrolments', (req, res) => {
         return converted
       })
       .catch((err) => {
-        console.log(`server side error: ${err}`)
+        console.log(`server side error: `)
+        console.log(err)
       });
     // console.log(xmlResult)
     return xmlResult
   }
 
-  // db query to get token from db, or retrieve new one and store if no token
-  db.query(sqlRetrieve, [userEmail])
-  .then(dbResult => {
-      if (dbResult.rows[0]['vt_token'] != null) {
-        vtToken = dbResult.rows[0]['vt_token']
-        getEnrolments(vtToken)
-            .then((result) => {
-            console.log(`line 98 result is: `)
-            console.log(result)
-            if (result['Auth']['Status']['_text'] != 1) {
-              res.status(500).json("the request to the external API didn't succeed")
-            } else {
-              res.json(result)
-            }
-        })
-      } else {
-        authenticate()
-        .then((result) => {
-          vtToken = result['_text']
-          db.query(sqlPutToken, [vtToken, userEmail])
-          .then(dbResult => {
-            getEnrolments(vtToken)
-            .then((result) => {
-              console.log(`line 109 result is: `)
-              console.log(result)
-            })
-          })
-          .catch(reason => {
-            console.log('line 115')
-            console.log(reason)
-            res.status(500).json("unknown error occurred")
-          })
-        })
-      }
-  })
-  .catch((error) => {
-      console.log("line 59 error is ")
-      console.log(error)
-  })
-
+  // retrieve token and get enrolments  
+    authenticate()
+    .then((result) => {
+		console.log(result)
+		vtToken = result['_text']
+		let newToken = fixToken(vtToken)
+		console.log('token is now ')
+		console.log(newToken)
+		getEnrolments(newToken)
+		.then((result) => {
+			console.log(`line 135 result is: `)
+			console.log(result)
+			if (result != undefined) {
+				if (result['Auth']['Status']['_text'] != 1) {
+				res.status(500).json("the request to the external API didn't succeed")
+				} else {
+				res.json(result)
+				}
+			} else {
+				res.status(500).json("the request to the external API didn't succeed - undefined")
+			}
+		})
+		.catch((error) => {
+		console.log("getenrolments - line 159 error is ")
+		console.log(error)
+		})
+	})
+    .catch((error) => {
+        console.log("authenticate - line 163 error is ")
+        console.log(error)
+    })
 });
 
 module.exports = router

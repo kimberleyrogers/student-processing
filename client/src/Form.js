@@ -14,6 +14,11 @@ export function Form() {
     const [cpnTrainer, setCpnTrainer] = useState('')
     const [cpnComments, setCpnComments] = useState('');
    
+{/* <PDFFile />
+        <PDFDownloadLink document={<PDFFile />} filename="Withdrawal Form - Student Name - Student Number">
+            {({loading}) => (loading ? (<button>Loading document...</button>) : (<button>Download</button>))}
+        </PDFDownloadLink> */} 
+
 
     return (
         <form >
@@ -81,4 +86,55 @@ export function Form() {
 
 }
 
-    
+//     // db query to get token from db, or retrieve new one and store if no token
+//   db.query(sqlRetrieve, [userEmail])
+//   .then(dbResult => {
+//       if (dbResult.rows[0]['vt_token'] != null) {
+//         vtToken = dbResult.rows[0]['vt_token']
+//         getEnrolments(vtToken)
+//             .then((result) => {
+//             console.log(`line 98 result is: `)
+//             console.log(result)
+//             if (result['Auth']['Status']['_text'] != 1) {
+//               // res.status(500).json("the request to the external API didn't succeed")
+//               authenticate()
+//               .then((result) => {
+//                 vtToken = result['_text']
+//                 db.query(sqlPutToken, [vtToken, userEmail])
+//                 .then(dbResult => {
+//                   getEnrolments(vtToken)
+//                   .then((result) => {
+//                     console.log(`line 158 result is: `)
+//                     console.log(result)
+//                     res.json(result)
+//                   })
+//                 })
+//               })
+//             } else {
+//               res.json(result)
+//             }
+//         })
+//       } else {
+//         authenticate()
+//         .then((result) => {
+//           vtToken = result['_text']
+//           db.query(sqlPutToken, [vtToken, userEmail])
+//           .then(dbResult => {
+//             getEnrolments(vtToken)
+//             .then((result) => {
+//               console.log(`line 109 result is: `)
+//               console.log(result)
+//             })
+//           })
+//           .catch(reason => {
+//             console.log('line 115')
+//             console.log(reason)
+//             res.status(500).json("unknown error occurred")
+//           })
+//         })
+//       }
+//   })
+//   .catch((error) => {
+//       console.log("line 59 error is ")
+//       console.log(error)
+//   })
