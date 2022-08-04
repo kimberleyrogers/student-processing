@@ -116,6 +116,9 @@ function SignUpForm({ handleloginSignupChange }) {
             .then((res) => {
                 console.log(res)
                 setSignedUp(true)
+                // setEmail('')
+                // setName('')
+                // setPassword('')
 
             })
             .catch((err) => {
@@ -123,7 +126,6 @@ function SignUpForm({ handleloginSignupChange }) {
                     console.log('There is already an account with that email - login')
                 }
                 console.log(err)
-                
             })
             // then redirect to login page or display message
         }

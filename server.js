@@ -23,7 +23,7 @@ const app = express();
 
 // tell server where the client side items are
 // middleware is anything starting with app.use
-app.use(express.static('client'))
+app.use(express.static('client/build'))
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json())
 

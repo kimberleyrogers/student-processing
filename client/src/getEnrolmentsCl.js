@@ -15,9 +15,7 @@ export function GetEnrolments(props) {
         <div>
             {/* <button>Refresh token</button> */}
             <h2>Student INFO: {studentName}</h2>
-        
-    
-        
+            
             {searchResults.map((enrolment, index) => {
 
                 return (

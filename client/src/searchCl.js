@@ -26,7 +26,7 @@ export function Search(user, setUser, userEmail, setUserEmail) {
         let enrolmentArray =[]
 
         axios
-        .post(`http://localhost:3000/get_enrolments`, {
+        .post(`/get_enrolments`, {
             studentId: searchTerm,
             userName: userName,
             userEmail: emailAdd
