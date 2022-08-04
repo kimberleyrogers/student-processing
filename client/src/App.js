@@ -3,7 +3,7 @@ import PDFFile from './PDF';
 import { Convert, Search } from './searchCl';
 import { Login } from './login';
 import { useEffect, useState } from 'react';
-import { Form } from './form';
+import { Form } from './Form2';
 
 import { BrowserRouter, Routes, Route, useParams } from "react-router-dom";
 
