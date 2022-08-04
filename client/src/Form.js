@@ -46,32 +46,32 @@ export function Form() {
                 <input 
                     type="date"
                     required
-                    value={'lim'}
+                    value={pstacd}
                 />
             </label>
             <h2>CPN information</h2>
             <label>
-                date of CPN
+                date
+                <input 
+                    type="date"
+                    required
+                    value={cpnDate}
+                />
+            </label>
+            <label>
+                trainer
+                <input 
+                    type="text"
+                    required
+                    value={cpnTrainer}
+                />
+            </label>
+            <label>
+                comments 
                 <textarea 
-                    type="date"
+                    type="text"
                     required
-                    value={'lim'}
-                />
-            </label>
-            <label>
-                trainer on CPN 
-                <input 
-                    type="date"
-                    required
-                    value={'lim'}
-                />
-            </label>
-            <label>
-                CPN comments 
-                <input 
-                    type="date"
-                    required
-                    value={'lim'}
+                    value={cpnComments}
                 />
             </label>
             <input id='form-submit-button' type="submit" />

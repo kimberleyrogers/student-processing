@@ -90,28 +90,75 @@ router.post('/get_enrolments', (req, res) => {
     WHERE email = $2;
   `
 
+  // const xmlGetEnrolments = `
+  //     <Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
+  //     <Body>
+  //         <GetEnrolmentsForClient xmlns="http://www.ozsoft.com.au/VETtrak/api/complete">
+  //             <sToken>${vtToken}</sToken>
+  //             <sClie_Code>${studentId}</sClie_Code>
+  //         </GetEnrolmentsForClient>
+  //     </Body>
+  //     </Envelope>
+  //   `
+
+  const getEnrolments = async(vtToken) => {
+    const xmlGetEnrolments = `
+    <soap12:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope">
+    <soap12:Body>
+        <GetEnrolmentsForClient xmlns="http://www.ozsoft.com.au/VETtrak/api/complete">
+            <sToken>${vtToken}</sToken>
+            <sClie_Code>${studentId}</sClie_Code>
+        </GetEnrolmentsForClient>
+    </soap12:Body>
+    </soap12:Envelope>
+  `
+
+    vtToken = vtToken
+    // console.log('checking the vttoken and student ID is okay')
+    // console.log(vtToken)
+    // console.log(studentId)
+    // console.log('xmlgetenrolments')
+    // console.log(xmlGetEnrolments)
+    let xmlResult =
+      await axios
+      .post('https://sthservices.ozsoft.com.au/SIU_API/VT_API.asmx?WSDL', 
+      xmlGetEnrolments,
+        {headers: 
+            {'Content-Type': 'text/xml'}
+        })
+      .then((res) => {
+        const converted = convertGetEnrolments(res.data.toString())
+        return converted
+      })
+      .catch((err) => {
+        console.log(`server side error: ${err}`)
+      });
+    // console.log(xmlResult)
+    return xmlResult
+  }
+
   // db query to get token from db, or retrieve new one and store if no token
   db.query(sqlRetrieve, [userEmail])
   .then(dbResult => {
-      if (dbResult.rows.vt_token != null) {
-        console.log('line 55')
-        console.log(dbResult.rows)
-        vtToken = dbResult.rows.vt_token
-        getEnrolments()
-            .then((result) => 
-            console.log(`line 98 result is: ${result}`))
+      if (dbResult.rows[0]['vt_token'] != null) {
+        vtToken = dbResult.rows[0]['vt_token']
+        getEnrolments(vtToken)
+            .then((result) => {
+            console.log(`line 98 result is: `)
+            console.log(result)
+            if (result['Auth']['Status']['_text'] != 1) {
+              res.status(500).json("the request to the external API didn't succeed")
+            } else {
+              res.json(result)
+            }
+        })
       } else {
-        console.log("vt token is empty")
         authenticate()
         .then((result) => {
-          console.log(`the token is`)
-          console.log(result['_text'])
           vtToken = result['_text']
           db.query(sqlPutToken, [vtToken, userEmail])
           .then(dbResult => {
-            console.log('the db result is: fine ')
-            // console.log(dbResult)
-            getEnrolments()
+            getEnrolments(vtToken)
             .then((result) => {
               console.log(`line 109 result is: `)
               console.log(result)
@@ -130,43 +177,6 @@ router.post('/get_enrolments', (req, res) => {
       console.log(error)
   })
 
-    const xmlGetEnrolments = `
-      <Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
-      <Body>
-          <GetEnrolmentsForClient xmlns="http://www.ozsoft.com.au/VETtrak/api/complete">
-              <sToken>${vtToken}</sToken>
-              <sClie_Code>${studentId}</sClie_Code>
-          </GetEnrolmentsForClient>
-      </Body>
-      </Envelope>
-    `
-
-    const getEnrolments = async() => {
-      console.log('checking the vttoken and student ID is okay')
-      console.log(vtToken)
-      console.log(studentId)
-      let xmlResult =
-        await axios
-        .post('https://sthservices.ozsoft.com.au/SIU_API/VT_API.asmx?WSDL', 
-          xmlGetEnrolments,
-          {headers: 
-              {'Content-Type': 'text/xml'}
-          })
-        .then((res) => {
-          const converted = convertGetEnrolments(res.data.toString())
-          return converted
-        })
-        .catch((err) => {
-          console.log(`server side error: ${err}`)
-        });
-      // console.log(xmlResult)
-      return xmlResult
-    }
-
-    // next - store token in DB
-    
-      // if status = -1, call Auth.
-      // res.send(result))
 });
 
 module.exports = router

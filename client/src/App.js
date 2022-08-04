@@ -41,10 +41,10 @@ function HomePage() {
         <div id='home-page'>
            
             <div id="home-first-column">
-            <p>Logged in as {user} using {userEmail}</p>
+            
                 {/* <Search /> */}
                 {loggedIn == true ?
-                <Search user={user} setUser={setUser} userEmail={userEmail} setUserEmail={setUserEmail}/> :
+                <div><p>Hi {user}, you're logged in.</p> <Search user={user} setUser={setUser} userEmail={userEmail} setUserEmail={setUserEmail}/></div> :
                 <Login loggedIn={loggedIn} setLoggedIn={setLoggedIn} user={user} setUser={setUser} userEmail={userEmail} setUserEmail={setUserEmail}/>}
             </div>
             <div id="home-second-column">

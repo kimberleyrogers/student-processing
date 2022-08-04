@@ -50,11 +50,23 @@ export function Search(user, setUser, userEmail, setUserEmail) {
             // const response = res.data['_text']
             
         })
-        .catch((err) => {
-            // if
-            console.log(err.response)});
+        .catch((error) => {
+            if (error.response) {
+                console.log("error.response.data");
+                console.log(error.response.data);
+                console.log("error.response.headers");
+                console.log(error.response.headers);
+                console.log("error.response.headers");
+                console.log(error.response.headers);
+            } else if (error.request) {
+                console.log(error.request)
+            } else {
+                console.log('error.message')
+                console.log(error.message)
+            }
+        })
     }
-    console.log(searchTerm)
+
 
     return (
         <div>
@@ -70,8 +82,8 @@ export function Search(user, setUser, userEmail, setUserEmail) {
                 </label>
                 <input type="submit" />
             </form>
-            {/* get enrolments just displays the results */}
-            {submitSearch === false ? <NoSearch /> : <GetEnrolments studentName={studentName} />}
+            
+            {submitSearch === false ? <NoSearch /> : <GetEnrolments studentName={studentName} searchResults={searchResults}/>}
         </div> 
     )
 }
@@ -87,17 +99,3 @@ function NoSearch() {
     )
 }
 
-
-// call API - using token to GetEnrolmentsByClient - returns XML
-
-// function for turning XML into JSON - GetEnrolmentsByClientID
-// needs work so it works for multiple results, not just one
-export function Convert(props) {
-    const result1 = convert.xml2json(props.xml, {compact: true, spaces: 4});
-    let parsed = JSON.parse(result1);
-    let readableInfo = parsed['soap:Envelope']['soap:Body']['GetEnrolmentsForClientResponse']['GetEnrolmentsForClientResult']['ClieEnroList']['TClieEnro']
-    let readableInfoResult1 = readableInfo[0]
-    // console.log(readableInfoResult1)
-    let readableInfoResult2 = readableInfo[1]
-    return readableInfoResult1['Qual_Name']['_text']
-}

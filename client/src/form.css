@@ -13,6 +13,12 @@ form > label {
 form > label > input {
     margin-left: 10px;
 }
+form > label > textarea {
+    margin-left: 10px;
+}
+form > label > select {
+    margin-left: 10px;
+}
 
 #form-submit-button {
     margin: 20px;

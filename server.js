@@ -15,7 +15,7 @@ const authController = require('./controllers/auth.js')
 const getEnrolmentsController = require('./controllers/getEnrolments.js')
 const sessionController = require('./controllers/session.js')
 const signUpController = require('./controllers/signUp.js')
-const handshakeController = require('./controllers/handshake.js')
+
 
 // creates the local address
 const port = process.env.PORT || 3000;
@@ -55,7 +55,7 @@ app.use('/', authController);
 app.use('/', getEnrolmentsController);
 app.use('/api/session', sessionController);
 app.use('/new_user', signUpController);
-app.use('/', handshakeController);
+
 
 //error middleware
 app.use((err, req, res, next) => {
