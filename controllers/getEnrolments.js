@@ -13,10 +13,8 @@ function convertForAuthenticate(xmlString) {
   const xmlStringMinusHeader = xmlString.slice(38)
   const unparsedJSON = convert.xml2json(xmlStringMinusHeader, {compact: true, spaces: 4});
   const parsedJSON = JSON.parse(unparsedJSON);
-  // console.log(`parsedJSON is: ${parsedJSON}`)
   const token = parsedJSON['soap:Envelope']['soap:Body']['ValidateClientResponse']['ValidateClientResult']['Token']
   return token
-  //commit to database
 }
 
 
@@ -25,11 +23,7 @@ function convertGetEnrolments(xmlString) {
   const xmlStringMinusHeader = xmlString.slice(38)
   const unparsedJSON = convert.xml2json(xmlStringMinusHeader, {compact: true, spaces: 4});
   const parsedJSON = JSON.parse(unparsedJSON);
-  console.log(`parsedJSON is: `)
-  console.log(parsedJSON)
   const enrolmentArray = parsedJSON['soap:Envelope']['soap:Body']['GetEnrolmentsForClientResponse']['GetEnrolmentsForClientResult']
-  console.log(`enrolment array: `)
-  console.log(enrolmentArray)
   return enrolmentArray
 }
 
@@ -41,7 +35,6 @@ router.post('/get_enrolments', (req, res) => {
   const userEmail = req.body.userEmail
   const vtUsername = process.env.VT_USERNAME
   const vtPassword = process.env.VT_PASSWORD
-  console.log(`on server side ${userName} and ${userEmail} and ${studentId}`)
   let vtToken = ''
 
   const xmlAuthenticate = `
@@ -74,7 +67,6 @@ router.post('/get_enrolments', (req, res) => {
       .catch((err) => {
         console.log(`server side error: ${err}`)
       });
-    // console.log(xmlResult)
     return xmlResult
   }
 
@@ -87,16 +79,7 @@ router.post('/get_enrolments', (req, res) => {
     SET vt_token = $1 
     WHERE email = $2;
   `
-  // function fixToken(token) {
-  //   if (!String.prototype.encodeHTML) {
-  //     String.prototype.encodeHTML = function () {
-  //       return this.replace(/&/g, '&amp;')
-  //                 .replace(/</g, '&lt;')
-  //                 .replace(/>/g, '&gt;')
-  //                 .replace(/"/g, '&quot;')
-  //                 .replace(/'/g, '&apos;');
-  //   };
-  // }}
+
 
 // https://stackoverflow.com/questions/7918868/how-to-escape-xml-entities-in-javascript
   const fixToken = (token) => {
@@ -133,11 +116,6 @@ router.post('/get_enrolments', (req, res) => {
     </soap12:Envelope>`
 
     vtToken = vtToken
-    // console.log('checking the vttoken and student ID is okay')
-    // console.log(vtToken)
-    // console.log(studentId)
-    console.log('xmlgetenrolments')
-    console.log(xmlGetEnrolments)
     let xmlResult =
       await axios
       .post('https://sthservices.ozsoft.com.au/SIU_API/VT_API.asmx?WSDL', 
@@ -160,15 +138,13 @@ router.post('/get_enrolments', (req, res) => {
   // retrieve token and get enrolments  
     authenticate()
     .then((result) => {
-		console.log(result)
+
 		vtToken = result['_text']
 		let newToken = fixToken(vtToken)
-		console.log('token is now ')
-		console.log(newToken)
+
 		getEnrolments(newToken)
 		.then((result) => {
-			console.log(`line 135 result is: `)
-			console.log(result)
+
 			if (result != undefined) {
 				if (result['Auth']['Status']['_text'] != 1) {
 				res.status(500).json("the request to the external API didn't succeed")

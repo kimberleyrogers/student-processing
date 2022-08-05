@@ -1,10 +1,7 @@
 import './App.css';
-import PDFFile from './PDF';
 import { Convert, Search } from './searchCl';
 import { Login } from './login';
 import { useEffect, useState } from 'react';
-import { Form } from './Form2';
-
 import { BrowserRouter, Routes, Route, Link, useParams } from "react-router-dom";
 
 function HomePage() {
@@ -16,20 +13,18 @@ function HomePage() {
 
     return (
         <div id='home-page'>
-            <div id="home-first-column">
+            {/* <div id="home-first-column"> */}
                 <button>
                     <Link to="/about">About</Link>
                 </button>
                 {loggedIn == true ?
-                <div><h1>Hi {user}, you're logged in.</h1> <Search user={user} setUser={setUser} userEmail={userEmail} setUserEmail={setUserEmail}/></div> :
+                <div><h1>hi {user}, you're logged in</h1> <Search user={user} setUser={setUser} userEmail={userEmail} setUserEmail={setUserEmail} loggedIn={loggedIn} setLoggedIn={setLoggedIn}/></div> :
                 <Login loggedIn={loggedIn} setLoggedIn={setLoggedIn} user={user} setUser={setUser} userEmail={userEmail} setUserEmail={setUserEmail}/>}
 
-            </div>
+            {/* </div>
             <div id="home-second-column">
-                {loggedIn == true ?
-                <Form /> :
-                <p></p>}
-            </div>
+                <p></p>
+            </div> */}
         </div>
     )
 }

@@ -1,16 +1,19 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { GetEnrolments } from './getEnrolmentsCl';
+import { Form } from './Form2';
+import './App.css';
 const ReactDOM = require('react-dom');
 
-export function Search(user, setUser, userEmail, setUserEmail) {
+export function Search(user, setUser, userEmail, setUserEmail, loggedIn, setLoggedIn) {
 
     // all of the state needs to be here for child components
 
     const [searchTerm, setSearchTerm] = useState('');
     const [submitSearch, setSubmitSearch] = useState(false);
-    const [searchResults, setSearchResults] = useState('no results yet')
+    const [searchResults, setSearchResults] = useState('')
     const [studentName, setStudent] = useState('waiting for search results')
+    const [selectedEnrolmentQual, setSelectedEnrolmentQual] = useState(null)
     
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -67,22 +70,31 @@ export function Search(user, setUser, userEmail, setUserEmail) {
     }
 
     return (
-        <div>
-            {submitSearch === false ?  <p>Search for the student you are withdrawing.</p> : <p></p>}
-            <form onSubmit={handleSubmit}>
-                <label>
-                    SEARCH:
-                    <input 
-                        type="text"
-                        required
-                        value={searchTerm}
-                        onChange ={(e) => setSearchTerm(e.target.value)}
-                    />
-                </label>
-                <input type="submit" />
-            </form>
-            
-            {searchResults && submitSearch === true ? <GetEnrolments studentName={studentName} searchResults={searchResults} /> : <p></p>}
+        <div id="search-container">
+            <div id="search-row1">
+                {submitSearch === false ?  <p>Search for the student you are withdrawing.</p> : <p></p>}
+                <form onSubmit={handleSubmit}>
+                    <label>
+                        SEARCH:
+                        <input 
+                            type="text"
+                            required
+                            value={searchTerm}
+                            onChange ={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </label>
+                    <input type="submit" />
+                </form>
+            </div>
+            <div id="search-first-column">
+                
+           
+            {searchResults && submitSearch === true ? <GetEnrolments studentName={studentName} searchResults={searchResults} setSelectedEnrolmentQual={setSelectedEnrolmentQual}/> : <p></p>}
+            </div>
+            <div id="search-second-column">
+    
+                <Form studentName={studentName} setSelectedEnrolmentQual={setSelectedEnrolmentQual}/>
+            </div>
         </div> 
     )
 }

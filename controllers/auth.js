@@ -17,10 +17,8 @@ function convertForAuthenticate(xmlString) {
     const xmlStringMinusHeader = xmlString.slice(38)
     const unparsedJSON = convert.xml2json(xmlStringMinusHeader, {compact: true, spaces: 4});
     const parsedJSON = JSON.parse(unparsedJSON);
-    // console.log(`parsedJSON is: ${parsedJSON}`)
     const token = parsedJSON['soap:Envelope']['soap:Body']['ValidateClientResponse']['ValidateClientResult']['Token']
     return token
-    //commit to database
 }
 
 // template for how to make the api call, convert it to json and return to the server
@@ -51,10 +49,7 @@ router.get('/auth', (req, res) => {
               {'Content-Type': 'text/xml'}
           })
         .then((res) => {
-          // console.log(`line 67: ${res.data}`)
-          // const returnValueHeaderRemoved = res.data.toString().slice(38)
           const converted = convertForAuthenticate(res.data.toString())
-          // console.log('converted is... ' + converted)
           return converted
         })
         .catch((err) => {
@@ -66,7 +61,6 @@ router.get('/auth', (req, res) => {
     // next - don't return token, hash it and store in DB
     authenticate()
       .then((result) => {
-        console.log(`the token is ${result}`)
 
         // res.send(result)
     })

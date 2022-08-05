@@ -18,7 +18,6 @@ router.post('/', (req, res) => {
     let vtUsername = req.body.vtUsername;
     let vtPassword = req.body.vtPassword;
 
-    console.log(`checking values recieved ${name} ${email} ${password}`)
 
     const password_hash = generateHash(password)
     // const vt_username_hash = generateHash(vtUsername)
@@ -37,17 +36,14 @@ router.post('/', (req, res) => {
         .then(dbResult => {
             if(dbResult.rows != "") {
                 res.status(400).json({success: "false", message: "email already exists"})
-                console.log('line 38')
                 return
             } else {
-                console.log('line 41')
                 let sql = `
                     INSERT INTO users (name, email, password_hash)
                     VALUES ($1, $2, $3);
                 `
                 db.query(sql, [name, email, password_hash])
                 .then(dbResult => {
-                    console.log('line 48')
                     res.json(dbResult)
                 })
                 .catch(reason => {

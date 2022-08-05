@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import './form.css';
-import { PDFFile } from './PDF';
+import { PdfFile } from './PDF';
 
 // Form for user to complete
 
-export function Form() {
+export function Form(studentName) {
 
     // state for form fields
-    const [wdType, setWdType] = useState('');
+    const [wdType, setWdType] = useState('formal');
     const [wdDate, setWdDate] = useState('');
     const [wdReason, setWdReason] = useState('')
     const [cpnTrainer, setCpnTrainer] = useState('')
@@ -21,20 +21,13 @@ export function Form() {
             <h2>withdrawal information</h2>
             <label>
                 type of withdrawal
-                <select>
+                <select
+                    value={wdType}
+                    onChange={(e) => setWdType(e.target.value)}
+                >
                     <option value='formal'>formal</option>
                     <option value='apparent'>apparent</option>
-                    onChange ={(e) => setWdType(e.target.value)}
                 </select>
-            </label>
-            <label>
-                date
-                <textarea 
-                    type="date"
-                    required
-                    value={wdDate}
-                    onChange ={(e) => setWdDate(e.target.value)}
-                />
             </label>
             <label>
                 reason for withdrawal
@@ -58,10 +51,10 @@ export function Form() {
             <input id='form-submit-button' type="submit" />
         </form>
 
-        <PDFFile />
-        <PDFDownloadLink document={<PDFFile />} filename="Withdrawal Form - Student Name - Student Number">
-            {({loading}) => (loading ? (<button>Loading document...</button>) : (<button>Download</button>))}
-        </PDFDownloadLink> 
+        {/* <PdfFile wdType={wdType} wdReason={wdReason} cpnTrainer={cpnTrainer} studentName={studentName} />
+        <PDFDownloadLink document={<PdfFile wdType={wdType} wdReason={wdReason} cpnTrainer={cpnTrainer} studentName={studentName} />} filename="Withdrawal Form - Student Name - Student Number">
+            {({loading}) => (loading ? (<button>Loading document...</button>) : (<button>Download PDFs</button>))}
+        </PDFDownloadLink>  */}
         </div>
     )
 }

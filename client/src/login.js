@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useState } from "react";
+import './App.css';
 
 
 export function Login({ loggedIn, setLoggedIn, user, setUser, userEmail, setUserEmail }) {
@@ -77,7 +78,7 @@ export function LoginForm({ user, setUser, handleloginSignupChange, loginSignup,
                         onChange ={(e) => setPassword(e.target.value)}
                     />
                 </label>
-                <input type="submit" />
+                <input className="black-button" type="submit" />
             </form>
             <h4>need to sign up?</h4>
             <button onClick={handleloginSignupChange}>create an account</button>
@@ -86,7 +87,7 @@ export function LoginForm({ user, setUser, handleloginSignupChange, loginSignup,
     )
 }
 
-function SignUpForm({ handleloginSignupChange }) {
+function SignUpForm(handleloginSignupChange) {
 
     const [name, setName] = useState('');   
     const [email, setEmail] = useState('');
