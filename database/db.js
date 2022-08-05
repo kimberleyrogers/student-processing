@@ -12,8 +12,7 @@ if (process.env.NODE_ENV === "production") {
     });
 } else {
     db = new pg.Pool({
-        database: "student_withdrawals",
-        port: 5432,
+        database: "student_withdrawals"
     });
 }
 
