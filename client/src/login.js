@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useState, useRef } from "react";
+import { useState } from "react";
 
 
 export function Login({ loggedIn, setLoggedIn, user, setUser, userEmail, setUserEmail }) {
@@ -34,13 +34,11 @@ export function LoginForm({ user, setUser, handleloginSignupChange, loginSignup,
             alert('you need both an email and password to log in')
         } else {
             axios
-            .post('http://localhost:3000/api/session/', {
+            .post('/api/session/', {
                 email: email,
                 password: password
             })
             .then((res) => {
-                console.log(res.data)
-                console.log("you're logged in?")
                 setLoggedIn(true)
                 setUser(res.data.name)
                 setUserEmail(res.data.email)
@@ -93,8 +91,6 @@ function SignUpForm({ handleloginSignupChange }) {
     const [name, setName] = useState('');   
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [vtUsername, setVtUsername] = useState('');
-    const [vtPassword, setVtPassword] = useState('');
     const [signedUp, setSignedUp] = useState(false);
    
     const handleSubmit = (e) => {
@@ -104,22 +100,14 @@ function SignUpForm({ handleloginSignupChange }) {
         if (!name || !email || !password) {
             alert('you need to provide all details to sign up')
         } else {
-            // let username = vtUsername.toString();
-            // let password = vtPassword.toString();
-            console.log(`before sending ${name} ${email} ${password}`);
             axios
-            .post('http://localhost:3000/new_user', {
+            .post('/new_user', {
                 name: name,
                 email: email,
                 password: password
             })
             .then((res) => {
-                console.log(res)
                 setSignedUp(true)
-                // setEmail('')
-                // setName('')
-                // setPassword('')
-
             })
             .catch((err) => {
                 if (err.response.data.message === "email already exists") {
@@ -127,7 +115,6 @@ function SignUpForm({ handleloginSignupChange }) {
                 }
                 console.log(err)
             })
-            // then redirect to login page or display message
         }
     }
 
@@ -163,25 +150,6 @@ function SignUpForm({ handleloginSignupChange }) {
                         onChange ={(e) => setPassword(e.target.value)}
                     />
                 </label>
-                {/* <h2>your Student Management System information</h2>
-                <label>
-                    SMS_USERNAME:
-                    <input 
-                        type="text"
-                        required
-                        value={vtUsername}
-                        onChange ={(e) => setVtUsername(e.target.value)}
-                    />
-                </label>
-                <label>
-                    SMS_PASSWORD:
-                    <input 
-                        type="password"
-                        required
-                        value={vtPassword}
-                        onChange ={(e) => setVtPassword(e.target.value)}
-                    />
-                </label> */}
                 <input type="submit" />
             </form>
             

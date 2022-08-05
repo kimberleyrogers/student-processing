@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
 
 //  styles.section, { color: 'blue'}, {fontSize: 80} ]
 
-const PDFFile = () => {
+export const PDFFile = () => {
     return (
     <Document>
         <Page size="A4" style={styles.body}>
@@ -39,4 +39,4 @@ const PDFFile = () => {
     )
 }
 
-export default PDFFile;
+// export default PDFFile;
