@@ -30,7 +30,7 @@ function HomePage() {
     )
 }
 
-function AboutPage() {
+export function AboutPage() {
     return (
         <div>
             <h1>about this site</h1>
@@ -45,7 +45,7 @@ function AboutPage() {
     )
 }
 
-function App() {
+export function App() {
 
     return (
 
@@ -60,4 +60,4 @@ function App() {
   );
 }
 
-export default App;
+

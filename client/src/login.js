@@ -22,7 +22,7 @@ export function Login({ loggedIn, setLoggedIn, user, setUser, userEmail, setUser
     )
 }
 
-function LoginForm({ user, setUser, handleloginSignupChange, loginSignup, setLoginSignup, loggedIn, setLoggedIn, userEmail, setUserEmail }) {
+export function LoginForm({ user, setUser, handleloginSignupChange, loginSignup, setLoginSignup, loggedIn, setLoggedIn, userEmail, setUserEmail }) {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
