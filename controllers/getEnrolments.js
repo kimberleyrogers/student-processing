@@ -138,6 +138,7 @@ router.post('/get_enrolments', (req, res) => {
   // retrieve token and get enrolments  
     authenticate()
     .then((result) => {
+      console.log(result)
 
 		vtToken = result['_text']
 		let newToken = fixToken(vtToken)

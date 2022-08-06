@@ -15,8 +15,8 @@ router.post('/', (req, res) => {
     let name = req.body.name;
     let email = req.body.email;
     let password = req.body.password;
-    let vtUsername = req.body.vtUsername;
-    let vtPassword = req.body.vtPassword;
+    // let vtUsername = req.body.vtUsername;
+    // let vtPassword = req.body.vtPassword;
 
 
     const password_hash = generateHash(password)
