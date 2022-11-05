@@ -170,3 +170,4 @@ dist
 .pnp.*
 
 /database/seed.sql
+database/seed.sql
