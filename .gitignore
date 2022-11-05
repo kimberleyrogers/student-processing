@@ -169,4 +169,4 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-/database
+/database/seed.sql
