@@ -1,1 +1,0 @@
-INSERT INTO users (name, email, password_hash, vt_token) VALUES ('kimberley', 'kim@email.com', '$2b$10$IQy1Yn.ziJhXQGeDI.XJJ.LQLl9vT1TLgnnpjD3shEGjeReoovN3W', '''%7&amp;)=("2(.*66&amp;9862:');
